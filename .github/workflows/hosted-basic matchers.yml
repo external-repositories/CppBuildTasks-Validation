@@ -1,12 +1,12 @@
-# Copyright (c) 2019-2020 Luca Cappa
+# Copyright (c) 2020 Luca Cappa
 # Released under the term specified in file LICENSE.txt
 # SPDX short identifier: MIT
-name: hosted-basic-autocache
+name: hosted-basic-autocache-matchers
 on: [push]
 
 jobs:
   job:
-    name: ${{ matrix.os }}-hosted-basic
+    name: ${{ matrix.os }}-hosted-basic-matcher
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -49,22 +49,24 @@ jobs:
       - name: Prints outputs of run-vcpkg task
         run: echo "'${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}' '${{  steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
       - name: Run CMake+Ninja without triplet
+        continue-on-error: true
         uses: lukka/run-cmake@matchers
         id: runcmake
         with:
           cmakeGenerator: 'Ninja'  
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-          cmakeListsTxtPath: '${{ github.workspace }}/cmakelists.txt/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/matchers/cmakelists.txt/CMakeLists.txt'
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
       - name: Run CMake+Ninja with triplet (cmd)
+        continue-on-error: true
         uses: lukka/run-cmake@matchers
         id: runcmake_cmd
         with:
           cmakeGenerator: 'Ninja'  
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-          cmakeListsTxtPath: '${{ github.workspace }}/cmakelists.txt/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/matchers/cmakelists.txt/CMakeLists.err.txt'
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '-- -v'
           vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
@@ -76,7 +78,7 @@ jobs:
         with:
           cmakeGenerator: 'Ninja'  
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-          cmakeListsTxtPath: '${{ github.workspace }}/cmakelists.txt/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/matchers/cmakelists.txt/CMakeLists.txt'
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '-- -v'
           vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
